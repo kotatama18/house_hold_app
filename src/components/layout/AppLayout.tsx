@@ -2,79 +2,48 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Outlet } from 'react-router-dom';
+import SideBar from '../common/SideBar.tsx';
 
 const drawerWidth = 240;
 
 
-export default function ResponsiveDrawer() {
+export default function AppLayout() {
+  //mobileOpenが状態を表す変数, setMobileOpenは状態変数(mobileOpen)を更新する関数
+  //useStateはReactのフックで初期状態を設定するのに使う
+  //モバイル用のドロワーが開いているかどうか
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  //ドロワーが閉じるアニメーションの管理
   const [isClosing, setIsClosing] = React.useState(false);
 
+  //ドロワーを閉じる関数
   const handleDrawerClose = () => {
-    setIsClosing(true);
-    setMobileOpen(false);
+    setIsClosing(true); //ドロワーが閉じるアクションを始める
+    setMobileOpen(false); //ドロワーを閉じる
   };
 
+  //ドロワーを閉じるアクションが終わるとアニメーションをfalseにする
   const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
+    setIsClosing(false);//ドロワーが閉じるアクションが終わったらfalseに戻す
   };
 
+   //ドロワーの開閉を逆転させる
   const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen);
+    if (!isClosing) {  //閉じるアニメーション中(isClsing is true)の時は実行しない 
+      setMobileOpen(!mobileOpen); //ドロワーの開閉状態を逆転させる
     }
   };
 
-  const drawer = (
-    <div>
-      <Toolbar />
-      {/* Dividerは斜線 */}
-      <Divider />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  
 
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    // 100vh = 画面全体の高さを示す
+    <Box sx={{ display: 'flex', bgcolor: (theme) => theme.palette.grey[100], minHeight: "100vh" }}>
       <CssBaseline />
       {/* ヘッダー */}
       <AppBar
@@ -96,57 +65,28 @@ export default function ResponsiveDrawer() {
             <MenuIcon />
           </IconButton>
           {/* 実際のヘッダーの文字 */}
-          <Typography variant="h6" noWrap component="div">
-            Responsive drawer
+          <Typography variant="h6" noWrap component="div" fontWeight="fontWeightBold">
+            家計簿だよん
           </Typography>
         </Toolbar>
       </AppBar>
+      
       {/* サイドバー */}
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        {/* モバイル用 */}
-        <Drawer
-          // トリガーによってdrawerの表示・非表示を切り変えられる
-          variant="temporary"
-          open={mobileOpen}
-          onTransitionEnd={handleDrawerTransitionEnd}
-          onClose={handleDrawerClose}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          // sx = styleのようなもの、xs=0px~ sm=600px~
-          // display :block は要素が改行され上から下に積まれる見た目になる
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        {/* PC用 */}
-        <Drawer
-        //常に固定でdrawerが表示される(トリガー等があって変わるのではなく、下の画面サイズで自動で変わる)
-          variant="permanent"
-          // sx = styleのようなもの、xs=0px~ sm=600px~
-          // display :block は要素が改行され上から下に積まれる見た目になる
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
+      <SideBar 
+        drawerWidth={drawerWidth}
+        mobileOpen ={mobileOpen}
+        handleDrawerTransitionEnd={handleDrawerTransitionEnd}
+        handleDrawerClose={handleDrawerClose}
+      />
+
       {/* メインコンテンツ */}
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
+        {/* Toolbarは余白を出すためのもの */}
         <Toolbar />
+        {/* ここでhome,report等のコンポーネントを呼び出す */}
         <Outlet />
       </Box>
     </Box>

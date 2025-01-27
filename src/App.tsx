@@ -27,7 +27,6 @@ function App() {
   const[currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(()=>{
-
     //　firebaseのTransactionsテーブルにある値を全て取得するメソッド
     const fetchTransactions = async() => {
       try{
@@ -64,7 +63,7 @@ function App() {
     <Router>
         <Routes>
           <Route path="/" element={<AppLayout />}> 
-            <Route index element={<Home monthlyTransactions={monthlyTransactions}/>}/>
+            <Route index element={<Home monthlyTransactions={monthlyTransactions} setCurrentMonth={setCurrentMonth}/>}/>
             <Route path="/report" element={<Report />}/>
             <Route path="*" element={<NoMatch />}/>
           </Route>

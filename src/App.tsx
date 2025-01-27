@@ -56,7 +56,6 @@ function App() {
   const monthlyTransactions = transactions.filter((transacrion) =>{
     return transacrion.date.startsWith(formatMonth(currentMonth))
   })
-  console.log(monthlyTransactions)
   return (
     // アプリ全体にテーマを反映させる
     <ThemeProvider theme={theme}>

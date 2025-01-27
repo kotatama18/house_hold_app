@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import React from 'react'
 import MonthlySummary from '../components/MonthlySummary.tsx'
-import Calender from '../components/Calender.tsx'
+import Calendar from '../components/Calendar.tsx'
 import TransactionMenu from '../components/TransactionMenu.tsx'
 import TransactionForm from '../components/TransactionForm.tsx'
 import { Transaction } from '../types'
@@ -18,7 +18,7 @@ const Home = ({monthlyTransactions}: HomeProps) => {
       {/* flexGrowを使えば画面幅を狭くした場合にここが画面いっぱいに残るようになる */}
       <Box sx={{flexGrow: 1}}> 
         <MonthlySummary monthlyTransactions={monthlyTransactions}/>
-        <Calender />
+        <Calendar />
       </Box>
 
       {/* 右側のコンテンツ */}

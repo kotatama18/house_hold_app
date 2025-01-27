@@ -3,8 +3,16 @@ import React from 'react'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import BalanceIcon from '@mui/icons-material/Balance';
+import { Transaction } from '../types';
+import { financeCalculations } from '../utils/financeCalculations.ts';
 
-const MonthlySummary = () => {
+interface MonthlySummaryprops{
+    monthlyTransactions: Transaction[],
+}
+// monthlyTransactions: 今月のTransactionsテーブルのデータ
+const MonthlySummary = ({monthlyTransactions}: MonthlySummaryprops) => {
+    const {income, expense, balance} = financeCalculations(monthlyTransactions)
+
   return (
     // spacingで全Grid毎の間隔をつける  mgで要素全体の下に余白をつける
     <Grid container spacing={{xs: 1, sm:2}} mg={2}>
@@ -25,7 +33,7 @@ const MonthlySummary = () => {
                     // wordBreakは文字が大きくなった時用の処理？
                     sx={{wordBreak: "break-word", fontSize:{xs: ".8rem", sm: "1rem", md:"1.2rem"}}}
                     >
-                        $300
+                        ¥{income}
                     </Typography>
                 </CardContent>
             </Card>
@@ -44,7 +52,7 @@ const MonthlySummary = () => {
                     fontWeight={"fontWeightBold"}
                     sx={{wordBreak: "break-word", fontSize:{xs: ".8rem", sm: "1rem", md:"1.2rem"}}}
                     >
-                        $300
+                        ¥{expense}
                     </Typography>
                 </CardContent>
             </Card>
@@ -63,7 +71,7 @@ const MonthlySummary = () => {
                     fontWeight={"fontWeightBold"}
                     sx={{wordBreak: "break-word", fontSize:{xs: ".8rem", sm: "1rem", md:"1.2rem"}}}
                     >
-                        $0
+                        ¥{balance}
                     </Typography>
                 </CardContent>
             </Card>

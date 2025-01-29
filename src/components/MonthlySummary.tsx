@@ -40,7 +40,7 @@ const MonthlySummary = ({monthlyTransactions}: MonthlySummaryprops) => {
         </Grid>
         {/* 支出 */}
         <Grid item xs={4} display={"flex"} flexDirection={"column"}>
-            <Card sx={{bgcolor: (theme)=>theme.palette.expenceColor.main, color: "white", borderRadius: "10px", flexGrow: 1,}}>
+            <Card sx={{bgcolor: (theme)=>theme.palette.expenseColor.main, color: "white", borderRadius: "10px", flexGrow: 1,}}>
                 <CardContent sx={{padding:{xs: 1, sm: 2}}}>
                     <Stack direction={"row"}>
                         <ArrowDownwardIcon sx={{fontSize: "2rem"}} />

@@ -7,13 +7,21 @@ import { DatesSetArg, EventContentArg } from '@fullcalendar/core'
 import { caluculateDailyBalances } from '../utils/financeCalculations.ts'
 import { Balance, CalendarContent, Transaction } from '../types'
 import { formatCurrency } from '../utils/formatting.ts'
+import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
+import { useTheme } from '@mui/material'
+import { isSameMonth } from 'date-fns'
+
+
 
 interface CalendarProps{
     monthlyTransactions: Transaction[],
     setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>
+    setCurrentDay: React.Dispatch<React.SetStateAction<string>>
+    currentDay: string
+    today: string
 }
-const Calendar = ({monthlyTransactions, setCurrentMonth}: CalendarProps) => {
-
+const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay, today}: CalendarProps) => {
+    const theme = useTheme()
     //日付毎の収支を取得するメソッド
     const dailyBalances = caluculateDailyBalances(monthlyTransactions)
 
@@ -31,9 +39,15 @@ const Calendar = ({monthlyTransactions, setCurrentMonth}: CalendarProps) => {
     };
     const calendarEvents = createCalendarEvents(dailyBalances);
 
+    // 選択した日付(currentDay)のバックグラウンドカラーが変わる
+    const backgroundEvent = {
+        start: currentDay,
+        display: "background",
+        backgroundColor: theme.palette.incomeColor.light
+    }
+
     //カレンダーにその日の収支をレンダリングする処理
     const renderEventContent = (eventInfo: EventContentArg) => {
-        console.log(eventInfo)
         return(
             <div>
                 <div className='money' id="event-income">
@@ -49,20 +63,32 @@ const Calendar = ({monthlyTransactions, setCurrentMonth}: CalendarProps) => {
         )
     }
 
-    //選択した月のデータを取得する
+    //選択した月のデータを取得する、今月月を表示している時のみ今日の日付をステートに入れる
     const handleDateSet= (datesetInfo: DatesSetArg) => {
-        setCurrentMonth(datesetInfo.view.currentStart)
+        const currentMonth = datesetInfo.view.currentStart
+        setCurrentMonth(currentMonth)
+        const todayDate = new Date()
+        //表示月と今日の日付が合致するか確認する、その場合今日ボタンを押すと今日の日付を取得できる
+        if(isSameMonth(todayDate, currentMonth)){
+            setCurrentDay(today);
+        }  
+    }
+
+    //選択した日付の情報を受け取る
+    const handleDateClick = (dateInfo: DateClickArg) =>{
+        setCurrentDay(dateInfo.dateStr)
     }
 
   return (
     <FullCalendar
         locale={jaLocale}
-        plugins={[dayGridplugin]}
+        plugins={[dayGridplugin, interactionPlugin]}
          // 月間ビューのオプション？
         initialView = 'dayGridMonth'
-        events={calendarEvents}
+        events={[...calendarEvents, backgroundEvent]}
         eventContent={renderEventContent}
         datesSet={handleDateSet}
+        dateClick={handleDateClick}
     />
   )
 }

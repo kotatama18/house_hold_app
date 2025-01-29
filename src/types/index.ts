@@ -2,7 +2,7 @@
 
 export type TransactionType = "income" | "expense";
 export type IncomeCategory = "給与" | "副収入" | "お小遣い";
-export type ExpenceCategory = "食費" | "日用品" | "娯楽";
+export type ExpenseCategory = "食費" | "日用品" | "住居費" | "交際費" | "娯楽" | "交通費";
 
 // Transactionsテーブルのdbの値をカラム毎に定義
 export interface Transaction {
@@ -11,7 +11,7 @@ export interface Transaction {
     amount: number,
     content: string,
     type: TransactionType,
-    category: IncomeCategory | ExpenceCategory;
+    category: IncomeCategory | ExpenseCategory;
 }
 
 

@@ -19,8 +19,9 @@ interface CalendarProps{
     setCurrentDay: React.Dispatch<React.SetStateAction<string>>
     currentDay: string
     today: string
+    onDateClickOpenForm: (dateStr: string) => void
 }
-const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay, today}: CalendarProps) => {
+const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay, today, onDateClickOpenForm}: CalendarProps) => {
     const theme = useTheme()
     //日付毎の収支を取得するメソッド
     const dailyBalances = caluculateDailyBalances(monthlyTransactions)
@@ -76,6 +77,7 @@ const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentD
 
     //選択した日付の情報を受け取る
     const handleDateClick = (dateInfo: DateClickArg) =>{
+        onDateClickOpenForm(dateInfo.dateStr)
         setCurrentDay(dateInfo.dateStr)
     }
 

@@ -55,13 +55,31 @@ const Home = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDelete
     setSelectedTransaction(transaction)
   }
 
+  //カレンダーの日付マスをクリックしたらその日付のフォームが開く
+  const handleDateClickOpenForm = (dateStr: string) =>{
+    setSelectedTransaction(null)
+    if(currentDay === dateStr){
+      setIsEntryDrawerOpen(!isEntryDrawerOpen)
+    }else{
+      setIsEntryDrawerOpen(true)
+    }
+  }
+
+
   return (
     <Box sx={{display:'flex'}}>
       {/* 左側のコンテンツ */}
       {/* flexGrowを使えば画面幅を狭くした場合にここが画面いっぱいに残るようになる */}
       <Box sx={{flexGrow: 1}}> 
         <MonthlySummary monthlyTransactions={monthlyTransactions}/>
-        <Calendar monthlyTransactions={monthlyTransactions} setCurrentMonth={setCurrentMonth} setCurrentDay={setCurrentDay} currentDay={currentDay} today={today}/>
+        <Calendar 
+          monthlyTransactions={monthlyTransactions} 
+          setCurrentMonth={setCurrentMonth} 
+          setCurrentDay={setCurrentDay} 
+          currentDay={currentDay} 
+          today={today}
+          onDateClickOpenForm={handleDateClickOpenForm}
+        />
       </Box>
 
       {/* 右側のコンテンツ */}

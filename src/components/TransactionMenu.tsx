@@ -25,9 +25,10 @@ interface TransactionMenuProps {
   dairyTransactions: Transaction[],
   currentDay: string,
   onAddTransactionForm: ()=> void,
+  onSelectTransaction: (transaction: Transaction)=> void;
 }
 
-const TransactionMenu = ({dairyTransactions, currentDay, onAddTransactionForm}:TransactionMenuProps) => {
+const TransactionMenu = ({dairyTransactions, currentDay, onAddTransactionForm, onSelectTransaction}:TransactionMenuProps) => {
   const menuDrawerWidth = 320;
   return (
     //メニュー全体
@@ -77,12 +78,14 @@ const TransactionMenu = ({dairyTransactions, currentDay, onAddTransactionForm}:T
                {/* これで1取引単位 */}
               {dairyTransactions.map((transaction, index)=>(
                 <ListItem disablePadding key={index}>
-                {/* 取引カードを制御できる。 */}
+                {/* 複数の取引カードを制御できる。 */}
                 <Card
                   sx={{
                     width: "100%",
                     backgroundColor: transaction.type==="income"?(theme)=> theme.palette.incomeColor.light : (theme)=> theme.palette.expenseColor.light
                   }}
+                  //取引カードを選択した時
+                  onClick={()=> onSelectTransaction(transaction)}
                 >
                   <CardActionArea>
                     <CardContent>

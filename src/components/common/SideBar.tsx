@@ -1,9 +1,7 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material'
 import React, {CSSProperties} from 'react'
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from  '@mui/icons-material/Mail'
 import CottageIcon from '@mui/icons-material/Cottage';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import DomainVerificationIcon from '@mui/icons-material/DomainVerification';
 import { NavLink } from 'react-router-dom';
 
 interface SideBarProps {
@@ -11,6 +9,7 @@ interface SideBarProps {
     mobileOpen:boolean,
     handleDrawerClose: ()=> void, 
     handleDrawerTransitionEnd: ()=> void,
+    setActiveScreen: (string)=>void;
 }
 
 //サイドバーに出てくる要素の型定義
@@ -20,12 +19,12 @@ interface menuItem {
     icon: React.ComponentType,
 }
 
-const SideBar = ({drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd}:SideBarProps) => {
+const SideBar = ({drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd, setActiveScreen}:SideBarProps) => {
 
     //　サイドバーに出てくる要素を定義する
     const MenuItems: menuItem[] =[
         {text: "Home", path: "/", icon: CottageIcon},
-        {text: "Report", path: "/report", icon: AutoGraphIcon}
+        {text: "TODO", path: "/todo", icon: DomainVerificationIcon}
     ]
 
     const baseLinkStyle :CSSProperties ={
@@ -46,7 +45,7 @@ const SideBar = ({drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransi
           <List>
             {MenuItems.map((item, index) => (
             // NavLink = aタグのようなもの, to = href, isActiveは選択された要素がtrueを持つ
-            <NavLink key={item.text} to={item.path} style={({isActive}) =>{
+            <NavLink onClick={()=>setActiveScreen(item.text)} key={item.text} to={item.path} style={({isActive}) =>{
                 return {
                     ...baseLinkStyle,
                     ...(isActive ? activeLinkStyle: {})

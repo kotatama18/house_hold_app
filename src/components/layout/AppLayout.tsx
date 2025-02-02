@@ -8,6 +8,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Outlet } from 'react-router-dom';
 import SideBar from '../common/SideBar.tsx';
+import { CSSProperties, useEffect, useState } from 'react';
 
 const drawerWidth = 240;
 
@@ -19,6 +20,14 @@ export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   //ドロワーが閉じるアニメーションの管理
   const [isClosing, setIsClosing] = React.useState(false);
+  //どの画面か管理するステート
+  // 初期値を localStorage から取得する
+  const [activeScreen, setActiveScreen] = useState(() => localStorage.getItem("activeScreen") || "Home")
+
+  // `activeScreen` が変更されたら localStorage に保存
+  useEffect(() => {
+    localStorage.setItem("activeScreen", activeScreen);
+  }, [activeScreen]);
 
   //ドロワーを閉じる関数
   const handleDrawerClose = () => {
@@ -38,8 +47,11 @@ export default function AppLayout() {
     }
   };
 
-  
-
+  //ヘッダーの背景色を指定する
+  const themeColor ={
+    Home:{color: "primary"},
+    TODO:{color: "#CC99FF	"}     
+  }
 
   return (
     // 100vh = 画面全体の高さを示す
@@ -53,7 +65,7 @@ export default function AppLayout() {
           ml: { md: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ backgroundColor: themeColor[activeScreen]?.color }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -66,7 +78,7 @@ export default function AppLayout() {
           </IconButton>
           {/* 実際のヘッダーの文字 */}
           <Typography variant="h6" noWrap component="div" fontWeight="fontWeightBold">
-            家計簿だよん
+          {activeScreen}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -77,6 +89,7 @@ export default function AppLayout() {
         mobileOpen ={mobileOpen}
         handleDrawerTransitionEnd={handleDrawerTransitionEnd}
         handleDrawerClose={handleDrawerClose}
+        setActiveScreen={setActiveScreen}
       />
 
       {/* メインコンテンツ */}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Home from './pages/Home.tsx';
-import Report from './pages/Report.tsx';
+import TODO from './pages/Todo.tsx';
 import NoMatch from './pages/NoMatch.tsx';
 import AppLayout from './components/layout/AppLayout.tsx';
 import { theme } from "./theme/theme.ts";
@@ -13,6 +13,7 @@ import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase
 import { db } from "./firebase.ts"
 import { formatMonth } from './utils/formatting.ts';
 import { Schema } from './validations/schema.ts';
+import Todo from './pages/Todo.tsx';
 
 
 
@@ -141,9 +142,18 @@ function App() {
                    onSaveTransaction={handleSaveTransaction} 
                    onDeleteTransaction={handleDeleteTransaction}
                    onUpdateTransaction={handleUpdateTransaction}
-                   />} />
-
-            <Route path="/report" element={<Report />} />
+                   />}
+             />
+            <Route 
+              path="/todo" 
+              element={
+                <Todo monthlyTransactions={monthlyTransactions} 
+                   setCurrentMonth={setCurrentMonth} 
+                   onSaveTransaction={handleSaveTransaction} 
+                   onDeleteTransaction={handleDeleteTransaction}
+                   onUpdateTransaction={handleUpdateTransaction}
+                />} 
+                />
             <Route path="*" element={<NoMatch />} />
           </Route>
         </Routes>

@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Outlet } from 'react-router-dom';
 import SideBar from '../common/SideBar.tsx';
 import { CSSProperties, useEffect, useState } from 'react';
+import { theme } from '../../theme/theme.ts';
 
 const drawerWidth = 240;
 
@@ -50,7 +51,7 @@ export default function AppLayout() {
   //ヘッダーの背景色を指定する
   const themeColor ={
     Home:{color: "primary"},
-    TODO:{color: "#CC99FF	"}     
+    TODO:{color: theme.palette.todoColor.main}     
   }
 
   return (
@@ -78,7 +79,7 @@ export default function AppLayout() {
           </IconButton>
           {/* 実際のヘッダーの文字 */}
           <Typography variant="h6" noWrap component="div" fontWeight="fontWeightBold">
-          {activeScreen}
+          {activeScreen}だよん
           </Typography>
         </Toolbar>
       </AppBar>

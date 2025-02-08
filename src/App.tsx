@@ -23,12 +23,14 @@ function App() {
   function isFireStoreError(err: unknown): err is { code: string, message; string } {
     return typeof err === "object" && err !== null && "code" in err
   }
-  // firestoreの内容をもつステート
+  // firestore(transactionの内容をもつステート
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // firestore(todoの内容をもつステート
+  const [todos, setTodos] = useState<Transaction[]>([]);
   //今月の日付をstateとして持つ
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
-  // firestoreの内容を取得したい処理
+  // firestore(Transaciton)の内容を取得したい処理
   useEffect(() => {
     //　firebaseのTransactionsテーブルにある値を全て取得するメソッド
     const fetchTransactions = async () => {
@@ -58,6 +60,38 @@ function App() {
   const monthlyTransactions = transactions.filter((transacrion) => {
     return transacrion.date.startsWith(formatMonth(currentMonth))
   })
+
+  // firestore(Todo)の内容を取得したい処理
+  useEffect(() => {
+    //　firebaseのTransactionsテーブルにある値を全て取得するメソッド
+    const fetchTodo = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Todo"))
+        const transactionsData = querySnapshot.docs.map((doc) => {
+          // doc.dataが実際のデータ(オブジェクト型)
+          return {
+            ...doc.data(),
+            id: doc.id,
+          } as Transaction
+        });
+        setTransactions(transactionsData)
+      } catch (err) {
+        if (isFireStoreError(err)) {
+          console.error("firebaseのエラーは:", err)
+          console.error("firebaseのエラーメッセージは:", err.message)
+          console.error("firebaseのエラーコードは:", err.code)
+        } else {
+          console.error("一般的なエラーは:", err)
+        }
+      }
+    }
+    fetchTodo();
+  }, [])
+  //Todoテーブルの今月のデータだけを抽出する
+  const monthlyTodo = todos.filter((todo) => {
+    return todo.date.startsWith(formatMonth(currentMonth))
+  })
+
 
   //取引を保存する処理
   const handleSaveTransaction = async (transaction: Schema) => {

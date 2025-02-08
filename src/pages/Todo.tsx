@@ -1,9 +1,9 @@
 import { Box } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import MonthlySummary from '../components/MonthlySummary.tsx'
-import Calendar from '../components/Calendar.tsx'
-import TransactionMenu from '../components/TransactionMenu.tsx'
-import TransactionForm from '../components/TransactionForm.tsx'
+import TodoMonthlySummary from '../components/todo/TodoMonthlySummary.tsx'
+import TodoCalendar from '../components/todo/TodoCalendar.tsx'
+import TodoTransactionMenu from '../components/todo/TodoTransactionMenu.tsx'
+import TodoTransactionForm from '../components/todo/TodoTransactionForm.tsx'
 import { Transaction } from '../types'
 import { format } from 'date-fns'
 import { Schema } from '../validations/schema.ts'
@@ -70,8 +70,8 @@ const Todo = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDelete
       {/* 左側のコンテンツ */}
       {/* flexGrowを使えば画面幅を狭くした場合にここが画面いっぱいに残るようになる */}
       <Box sx={{flexGrow: 1}}> 
-        <MonthlySummary monthlyTransactions={monthlyTransactions}/>
-        <Calendar 
+        <TodoMonthlySummary monthlyTransactions={monthlyTransactions}/>
+        <TodoCalendar 
           monthlyTransactions={monthlyTransactions} 
           setCurrentMonth={setCurrentMonth} 
           setCurrentDay={setCurrentDay} 
@@ -83,13 +83,13 @@ const Todo = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDelete
 
       {/* 右側のコンテンツ */}
       <Box>
-        <TransactionMenu  
+        <TodoTransactionMenu  
           dairyTransactions={dairyTransactions} 
           currentDay={currentDay} 
           onAddTransactionForm={handleAddTransactionForm} 
           onSelectTransaction={handleSelectTransaction}
         />
-        <TransactionForm 
+        <TodoTransactionForm 
           onCloseForm={closeForm} 
           isEntryDrawerOpen={isEntryDrawerOpen} 
           currentDay={currentDay} 

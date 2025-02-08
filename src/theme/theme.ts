@@ -1,12 +1,13 @@
 import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
-import { blue, green, red } from "@mui/material/colors";
+import { blue, green, purple, red } from "@mui/material/colors";
 
 
 declare module "@mui/material/styles"{
     interface Palette{
         incomeColor: PaletteColor,
         expenseColor: PaletteColor,
-        balanceColor: PaletteColor
+        balanceColor: PaletteColor,
+        todoColor: PaletteColor,
     }
 
     // 初期設定　プロパティの設定が必須ではない。
@@ -14,6 +15,8 @@ declare module "@mui/material/styles"{
         incomeColor?: PaletteColorOptions,
         expenseColor?: PaletteColorOptions,
         balanceColor?: PaletteColorOptions,
+        todoColor?: PaletteColorOptions,
+
     }
 }
 
@@ -44,5 +47,10 @@ export const theme = createTheme({
             light:green[100],
             dark:green[700],
         },
+        todoColor:{
+            main: purple[300],
+            light:purple[100],
+            dark:purple[500],
+        }
     }
 })

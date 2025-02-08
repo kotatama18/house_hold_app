@@ -4,41 +4,42 @@ import dayGridplugin from "@fullcalendar/daygrid"
 import jaLocale from "@fullcalendar/core/locales/ja"
 import "../../todoCalendar.css"
 import { DatesSetArg, EventContentArg } from '@fullcalendar/core'
-import { caluculateDailyBalances } from '../../utils/financeCalculations.ts'
-import { Balance, CalendarContent, Transaction } from '../../types'
-import { formatCurrency } from '../../utils/formatting.ts'
+import { Todo, Transaction } from '../../types'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { useTheme } from '@mui/material'
 import { isSameMonth } from 'date-fns'
+import { groupbyDailyTodos } from '../../utils/arrangeTodos.ts'
 
 
 
 interface CalendarProps{
-    monthlyTransactions: Transaction[],
     setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>
     setCurrentDay: React.Dispatch<React.SetStateAction<string>>
     currentDay: string
     today: string
-    onDateClickOpenForm: (dateStr: string) => void
+    onDateClickOpenForm: (dateStr: string) => void,
+    monthlyTodos: Todo[]
 }
-const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay, today, onDateClickOpenForm}: CalendarProps) => {
+const Calendar = ({setCurrentMonth, setCurrentDay, currentDay, today, onDateClickOpenForm, monthlyTodos}: CalendarProps) => {
     const theme = useTheme()
-    //日付毎の収支を取得するメソッド
-    const dailyBalances = caluculateDailyBalances(monthlyTransactions)
+    //日付毎にタスクをまとめるメソッド
+    const dailyTodos = groupbyDailyTodos(monthlyTodos)
 
     //FullCalender用のイベントを作成する関数
-    const createCalendarEvents = (dailyBalances: Record<string, Balance>): CalendarContent[]=> {
-        return Object.keys(dailyBalances).map((date)=>{
-            const {income, expense, balance}=dailyBalances[date]
+    const createCalendarEvents = (dailyTodos: Record<string, Todo[]>)=> {
+        return Object.keys(dailyTodos).map((date)=>{
             return{
                 start: date,
-                income: formatCurrency(income),
-                expense: formatCurrency(expense),
-                balance: formatCurrency(balance)
+                extendedProps: {
+                    title: dailyTodos[date].map(todo => todo.title), // ここでタスクのタイトルのみを渡す
+                    type: dailyTodos[date].map(todo => todo.type),
+                    category: dailyTodos[date].map(todo => todo.category),
+                }
             }
         })
     };
-    const calendarEvents = createCalendarEvents(dailyBalances);
+    const calendarEvents = createCalendarEvents(dailyTodos);
+
 
     // 選択した日付(currentDay)のバックグラウンドカラーが変わる
     const backgroundEvent = {
@@ -49,20 +50,43 @@ const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentD
 
     //カレンダーにその日の収支をレンダリングする処理
     const renderEventContent = (eventInfo: EventContentArg) => {
-        return(
+        const title = eventInfo.event.extendedProps.title || [];
+        const categories = eventInfo.event.extendedProps.category || [];
+        const types = eventInfo.event.extendedProps.type || []; // 各todoのtypeを取得
+    
+        return (
             <div>
-                <div className='money' id="event-income">
-                    {eventInfo.event.extendedProps.income}
-                </div>
-                <div className='money' id="event-expense">
-                    {eventInfo.event.extendedProps.expense}
-                </div>
-                <div className='money' id="event-balance">
-                    {eventInfo.event.extendedProps.balance}
-                </div>
+                {title.length > 0 ? (
+                    <ul>
+                        {title.map((todo: string, index: number) => {
+                            const category = categories[index]; 
+                            const type = types[index];// 予定かタスクかを判断
+                            
+                            // チェックボックスと立体感を加えるスタイル
+                            return (
+                                <li key={index} className={`task ${type}`}>
+                                    {type === "タスク" ? (
+                                        <>
+                                            <span className={`task ${category}`}>
+                                            <input type="checkbox" className="task-checkbox" />
+                                                {todo}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span className={`scheduled ${category}`}>
+                                            {todo}
+                                        </span>
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                ) : null}
             </div>
-        )
-    }
+        );
+    };
+    
+    
 
     //選択した月のデータを取得する、今月月を表示している時のみ今日の日付をステートに入れる
     const handleDateSet= (datesetInfo: DatesSetArg) => {

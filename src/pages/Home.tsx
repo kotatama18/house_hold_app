@@ -4,7 +4,7 @@ import MonthlySummary from '../components/MonthlySummary.tsx'
 import Calendar from '../components/Calendar.tsx'
 import TransactionMenu from '../components/TransactionMenu.tsx'
 import TransactionForm from '../components/TransactionForm.tsx'
-import { Transaction } from '../types'
+import { Todo, Transaction } from '../types'
 import { format } from 'date-fns'
 import { Schema } from '../validations/schema.ts'
 
@@ -17,7 +17,7 @@ interface HomeProps{
 }
 
 // monthlyTransactions: 今月のTransactionsテーブルのデータ
-const Home = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDeleteTransaction, onUpdateTransaction
+const Home = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDeleteTransaction, onUpdateTransaction,
   }: HomeProps, ) => {
   const today = format(new Date(), "yyyy-MM-dd");
   //選択した日付をステートとして管理する（初期値は今日の日付）

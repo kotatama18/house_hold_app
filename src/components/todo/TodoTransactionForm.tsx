@@ -12,7 +12,7 @@ import {
   import React, { JSX, useEffect, useState } from "react";
   import CloseIcon from "@mui/icons-material/Close"; // 閉じるボタン用のアイコン
   import {Controller, SubmitHandler, useForm} from "react-hook-form"
-  import { ExpenseCategory, IncomeCategory, Transaction } from "../../types/index.ts";
+  import { ExpenseCategory, IncomeCategory, Todo, Transaction } from "../../types/index.ts";
   import FastfoodIcon from "@mui/icons-material/Fastfood";
   import AlarmIcon from "@mui/icons-material/Alarm";
   import AddHomeIcon from "@mui/icons-material/AddHome";

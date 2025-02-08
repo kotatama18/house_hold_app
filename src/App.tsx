@@ -8,12 +8,13 @@ import AppLayout from './components/layout/AppLayout.tsx';
 import { theme } from "./theme/theme.ts";
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
-import { Transaction } from './types/index.ts';
+import { Todo, Transaction } from './types/index.ts';
 import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./firebase.ts"
 import { formatMonth } from './utils/formatting.ts';
 import { Schema } from './validations/schema.ts';
-import Todo from './pages/Todo.tsx';
+import TodoPage from './pages/Todo.tsx';
+import { IsTodayOptions } from 'date-fns';
 
 
 
@@ -26,7 +27,7 @@ function App() {
   // firestore(transactionの内容をもつステート
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   // firestore(todoの内容をもつステート
-  const [todos, setTodos] = useState<Transaction[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   //今月の日付をstateとして持つ
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
@@ -67,14 +68,14 @@ function App() {
     const fetchTodo = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "Todo"))
-        const transactionsData = querySnapshot.docs.map((doc) => {
+        const todosData = querySnapshot.docs.map((doc) => {
           // doc.dataが実際のデータ(オブジェクト型)
           return {
             ...doc.data(),
             id: doc.id,
-          } as Transaction
+          } as Todo
         });
-        setTransactions(transactionsData)
+        setTodos(todosData)
       } catch (err) {
         if (isFireStoreError(err)) {
           console.error("firebaseのエラーは:", err)
@@ -88,7 +89,7 @@ function App() {
     fetchTodo();
   }, [])
   //Todoテーブルの今月のデータだけを抽出する
-  const monthlyTodo = todos.filter((todo) => {
+  const monthlyTodos = todos.filter((todo) => {
     return todo.date.startsWith(formatMonth(currentMonth))
   })
 
@@ -181,11 +182,13 @@ function App() {
             <Route 
               path="/todo" 
               element={
-                <Todo monthlyTransactions={monthlyTransactions} 
+                <TodoPage 
+                   monthlyTransactions={monthlyTransactions} 
                    setCurrentMonth={setCurrentMonth} 
                    onSaveTransaction={handleSaveTransaction} 
                    onDeleteTransaction={handleDeleteTransaction}
                    onUpdateTransaction={handleUpdateTransaction}
+                   monthlyTodos={monthlyTodos}
                 />} 
                 />
             <Route path="*" element={<NoMatch />} />

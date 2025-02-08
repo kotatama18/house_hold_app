@@ -4,7 +4,7 @@ import TodoMonthlySummary from '../components/todo/TodoMonthlySummary.tsx'
 import TodoCalendar from '../components/todo/TodoCalendar.tsx'
 import TodoTransactionMenu from '../components/todo/TodoTransactionMenu.tsx'
 import TodoTransactionForm from '../components/todo/TodoTransactionForm.tsx'
-import { Transaction } from '../types'
+import { Todo, Transaction } from '../types'
 import { format } from 'date-fns'
 import { Schema } from '../validations/schema.ts'
 
@@ -14,10 +14,11 @@ interface HomeProps{
   onSaveTransaction: (transaction: Schema) => Promise<void>
   onDeleteTransaction: (transacrionId: string) => Promise<void>
   onUpdateTransaction:  (transaction: Schema, transacrionId: string) => Promise<void>
+  monthlyTodos: Todo[]
 }
 
 // monthlyTransactions: 今月のTransactionsテーブルのデータ
-const Todo = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDeleteTransaction, onUpdateTransaction
+const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDeleteTransaction, onUpdateTransaction, monthlyTodos
   }: HomeProps, ) => {
   const today = format(new Date(), "yyyy-MM-dd");
   //選択した日付をステートとして管理する（初期値は今日の日付）
@@ -72,12 +73,12 @@ const Todo = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDelete
       <Box sx={{flexGrow: 1}}> 
         <TodoMonthlySummary monthlyTransactions={monthlyTransactions}/>
         <TodoCalendar 
-          monthlyTransactions={monthlyTransactions} 
           setCurrentMonth={setCurrentMonth} 
           setCurrentDay={setCurrentDay} 
           currentDay={currentDay} 
           today={today}
           onDateClickOpenForm={handleDateClickOpenForm}
+          monthlyTodos={monthlyTodos}
         />
       </Box>
 
@@ -104,4 +105,4 @@ const Todo = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDelete
   )
 }
 
-export default Todo
+export default TodoHome

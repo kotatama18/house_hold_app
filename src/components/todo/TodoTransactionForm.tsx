@@ -13,55 +13,52 @@ import {
   import CloseIcon from "@mui/icons-material/Close"; // 閉じるボタン用のアイコン
   import {Controller, SubmitHandler, useForm} from "react-hook-form"
   import { ExpenseCategory, IncomeCategory, Todo, Transaction } from "../../types/index.ts";
-  import FastfoodIcon from "@mui/icons-material/Fastfood";
-  import AlarmIcon from "@mui/icons-material/Alarm";
-  import AddHomeIcon from "@mui/icons-material/AddHome";
-  import Diversity3Icon from "@mui/icons-material/Diversity3";
-  import SportsTennisIcon from "@mui/icons-material/SportsTennis";
-  import TrainIcon from "@mui/icons-material/Train";
-  import WorkIcon from "@mui/icons-material/Work";
-  import AddBusinessIcon from "@mui/icons-material/AddBusiness";
-  import SavingsIcon from "@mui/icons-material/Savings";
+  import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+  import ImportContactsIcon from '@mui/icons-material/ImportContacts';
+  import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
   import {zodResolver} from "@hookform/resolvers/zod";
+  import { TodoSchema, todoSchema } from "../../validations/todoSchema.ts";
   import { Schema, transacitonSchema } from "../../validations/schema.ts";
+  import { theme } from "../../theme/theme.ts";
   
   
   interface TransactionFormProps {
     onCloseForm: () => void;
     isEntryDrawerOpen: boolean;
     currentDay: string;
-    onSaveTransaction: (transaction: Schema)=>Promise<void>
-    selectedTransaction: Transaction | null 
-    onDeleteTransaction: (transacrionId: string) => Promise<void>
-    setSelectedTransaction: React.Dispatch<React.SetStateAction<Transaction | null>>
-    onUpdateTransaction:  (transaction: Schema, transacrionId: string) => Promise<void>
+    onSaveTodo: (transaction: TodoSchema)=>Promise<void>
+    onUpdateTodo:  (transaction: TodoSchema, transacrionId: string) => Promise<void>
+    onDeleteTodo: (transacrionId: string) => Promise<void>
+    selectedTodo: Todo | null 
+    setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>
   }
   
   interface CategoryItem{
-    label: IncomeCategory| ExpenseCategory;
+    label: "会社"| "プライベート" | "勉強";
     icon: JSX.Element
   }
-  
-  type IncomeExpense = "income" | "expense"
-  const TransactionForm = ({onCloseForm, isEntryDrawerOpen, currentDay, onSaveTransaction, selectedTransaction, onDeleteTransaction, setSelectedTransaction, onUpdateTransaction}: TransactionFormProps) => {
+
+  interface TypeItem{
+    label: "予定"| "タスク";
+    icon: JSX.Element
+  }
+
+  const TransactionForm = ({onCloseForm, isEntryDrawerOpen, currentDay, onSaveTodo, onUpdateTodo, onDeleteTodo, selectedTodo, setSelectedTodo}: TransactionFormProps) => {
     const formWidth = 320;
   
-    const expenseCategories: CategoryItem[] =[
-      {label: "食費", icon:<FastfoodIcon fontSize="small"/>},
-      {label: "日用品", icon:<AlarmIcon fontSize="small"/>},
-      {label: "住居費", icon:<AddHomeIcon fontSize="small"/>},
-      {label: "交際費", icon:<Diversity3Icon fontSize="small"/>},
-      {label: "娯楽", icon:<SportsTennisIcon fontSize="small"/>},
-      {label: "交通費", icon:<TrainIcon fontSize="small"/>},
+    const Categories: CategoryItem[] =[
+      {label: "会社", icon:<WorkHistoryIcon fontSize="small"/>},
+      {label: "プライベート", icon:<EmojiPeopleIcon fontSize="small"/>},
+      {label: "勉強", icon:<ImportContactsIcon fontSize="small"/>},
+    ]
+
+    const Types: TypeItem[] =[
+      {label: "予定", icon:<WorkHistoryIcon fontSize="small"/>},
+      {label: "タスク", icon:<EmojiPeopleIcon fontSize="small"/>},
     ]
   
-    const incomeCategories: CategoryItem[] =[
-      {label: "給与", icon:<WorkIcon fontSize="small"/>},
-      {label: "副収入", icon:<SavingsIcon fontSize="small"/>},
-      {label: "お小遣い", icon:<AddBusinessIcon fontSize="small"/>},
-    ]
-  
-    const[categories, setCategories] = useState(expenseCategories)
+    const[categories, setCategories] = useState(Categories)
+    const[types, setTypes] = useState(Types)
   
     //muiとreact-hook-formの統合をするのに必要、フォームの初期値を設定する。
     //react-hook-formが提供してくれテイル機能
@@ -69,33 +66,17 @@ import {
     // watch: valueの状態を監視できる
     // resolverがフォームのエラーを感知する。formState{error}でエラーオブジェクトを受け取る
     // reset: フォームの内容を空にする
-    const {control, setValue, watch, formState:{errors}, handleSubmit, reset}= useForm<Schema>({
+    const {control, setValue, watch, formState:{errors}, handleSubmit, reset}= useForm<TodoSchema>({
       defaultValues:{
-        type: "expense",
         date: currentDay,
-        amount: 0,
+        title: "",
+        type: "",
         category: "",
-        content: ""
+        status: "未完了",
+        memo: "",
       },
-      resolver : zodResolver(transacitonSchema)
+      resolver : zodResolver(todoSchema)
     })
-  
-    //formのvalueにincomeかexpenseか設定する
-    const incomeExpenseToggle = (type: IncomeExpense)   =>{
-      //フィールドのvalunに値を設定する
-      //フィールド名typeに引数で渡されたtyp(income, expense)を設定する
-      setValue("type", type)
-      setValue("category", "")
-    }
-  
-    //収支タイプの監視
-    const currentType = watch("type")
-    //選択する収支タイプが変わると、カテゴリの収支判別をする
-    useEffect(()=>{
-      const newCategories = 
-        currentType === "expense"? expenseCategories : incomeCategories;
-        setCategories(newCategories)
-    }, [currentType])
   
     //選択した日付がフォームの日付に設定される
     //useEffectは第二引数の配列に入れた変数が変化する度に実行する。[]の場合は初回レンダリング時のみ
@@ -105,17 +86,17 @@ import {
     }, [currentDay])
   
     //送信処理
-    const onSubmit:SubmitHandler<Schema> = (data) =>{
-      if(selectedTransaction){
-        onUpdateTransaction(data, selectedTransaction.id)
+    const onSubmit:SubmitHandler<TodoSchema> = (data) =>{
+      if(selectedTodo){
+        onUpdateTodo(data, selectedTodo.id)
           .then(()=>{
-            setSelectedTransaction(null)
+            setSelectedTodo(null)
           })
           .catch((error) =>{
   
           })
       }else{
-        onSaveTransaction(data)
+        onSaveTodo(data)
           .then(()=>{
           })
           .catch((error) =>{
@@ -124,48 +105,40 @@ import {
       }
       //フォームをリセットする。引数で設定した値はその値でリセットされる。
       reset({
-        type: "expense",
         date: data.date,
-        amount: 0,
+        title: "",
+        type: "",
         category: "",
-        content: ""
+        status: "未完了",
+        memo: ""
       })
     }
   
-    useEffect(()=>{
-      //選択肢が更新されたか確認
-      if(selectedTransaction){
-        //.someはこの条件式が正しければtrueを返す。
-        //現在のカテゴリステートが持つカテゴリ群の中に選択した取引のカテゴリと同一のものがある場合trueを返す
-        const categoryExists = categories.some((category) => category.label === selectedTransaction.category)
-        setValue("category", categoryExists ? selectedTransaction.category : "")
-      }
-    },[selectedTransaction, categories])
   
     //フォーム内容を更新する
     //取引カードをクリックした時にその内容をフォームに表示させる
     useEffect(()=>{
-      if(selectedTransaction){
-        setValue("type", selectedTransaction.type)
-        setValue("date", selectedTransaction.date)
-        setValue("amount", selectedTransaction.amount)
-        setValue("content", selectedTransaction.content)
+      if(selectedTodo){
+        setValue("date", selectedTodo.date)
+        setValue("title", selectedTodo.title)
+        setValue("memo", selectedTodo.memo)
       }else{
         reset({
-          type: "expense",
+          type: "",
           date: currentDay,
-          amount: 0,
+          title: "",
           category: "",
-          content: ""
+          status: "未完了",
+          memo: ""
         })
       }
-    },[selectedTransaction])
+    },[selectedTodo])
   
-    //Transactionテーブルにある選択した取引を削除する処理
+    //Todoテーブルにある選択した取引を削除する処理
     const handleDelete= ()=>{
-      if(selectedTransaction){
-        onDeleteTransaction(selectedTransaction?.id);
-        setSelectedTransaction(null)
+      if(selectedTodo){
+        onDeleteTodo(selectedTodo?.id);
+        setSelectedTodo(null)
       }
     }
   
@@ -207,35 +180,6 @@ import {
         {/* handleSubmit: バリデーションに通った時のみonSubmit関数を使えるようになる */}
         <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
-            {/* 収支切り替えボタン */}
-            {/* muiとreact-hook-formの統合をするのにControllerを使う */}
-            {/* name: react-hook-formで管理するformの名前 */}
-            <Controller 
-              name="type"
-              control={control}
-              //描画の対象を囲む。
-              //field: formの中身を管理するものが入っている
-              render ={({field})=>(
-                <ButtonGroup fullWidth>
-                  <Button 
-                    //caontained:ボタンを塗りつぶす, outlined: ボタンに輪郭線がつく
-                    variant={
-                      field.value === "expense" ? "contained": "outlined"
-                    } 
-                    color="error" 
-                    onClick={() =>incomeExpenseToggle("expense")}
-                  >
-                  支出
-                  </Button>
-                  <Button 
-                  onClick={()=>incomeExpenseToggle("income")}
-                  color="primary"
-                  variant={field.value === "income" ? "contained": "outlined"}
-                    >収入</Button>
-                </ButtonGroup>
-              )}
-            />
-            
             {/* 日付 */}
             <Controller 
               name="date"
@@ -257,7 +201,30 @@ import {
                   />
               )}
             />
-            
+            {/* タイプ */}
+            <Controller
+              name="type"
+              control={control}
+              render={({field})=>(
+                <TextField 
+                  {...field} 
+                  id="タイプ" 
+                  label="タイプ" 
+                  select
+                  error={!!errors.type}
+                    helperText={errors.type?.message}
+                >
+                  {types.map((type)=>(
+                    <MenuItem value={type.label} key={type.label}>
+                    <ListItemIcon>
+                      {type.icon}
+                    </ListItemIcon>
+                    {type.label}
+                  </MenuItem>
+                  ))}
+            </TextField>
+              )}
+            />
             {/* カテゴリ */}
             <Controller
               name="category"
@@ -283,36 +250,32 @@ import {
               )}
             />
             
-            {/* 金額 */}
+            {/* タスクタイトル */}
             <Controller
-              name="amount"
+              name="title"
               control={control}
               render={({field})=>(
                 <TextField 
                 {...field} 
-                value={field.value === 0 ? "" : field.value}
-                onChange={(e) =>{
-                  const newValue = parseInt(e.target.value, 10) || 0;
-                  field.onChange(newValue);
-                }}
-                label="金額" 
-                type="number" 
-                error={!!errors.amount}
-                helperText={errors.amount?.message}
+                value={field.value === "" ? "" : field.value}
+                label="タイトル" 
+                type="text" 
+                error={!!errors.title}
+                helperText={errors.title?.message}
                 />
               )}
               />
-            {/* 内容 */}
+            {/* メモ */}
             <Controller
-              name="content"
+              name="memo"
               control={control}
               render={({field})=>(
                 <TextField 
                   {...field} 
-                  label="内容" 
+                  label="メモ" 
                   type="text" 
-                  error={!!errors.content}
-                  helperText={errors.content?.message}
+                  error={!!errors.memo}
+                  helperText={errors.memo?.message}
                 />
               )}
               />
@@ -320,14 +283,15 @@ import {
             <Button 
               type="submit" 
               variant="contained" 
-              color={currentType === "income" ? "primary": "error"} 
+              sx={{ backgroundColor: theme.palette.todoColor.main }}
               fullWidth
             >
-              {selectedTransaction ? "更新" : "保存"}
+              "保存"
+              {/* {selectedTransaction ? "更新" : "保存"} */}
             </Button>
             {/* 削除ボタン */}
             {/* selectedTransactionが存在する(true)の時のみ以下が出現する*/}
-            {selectedTransaction && (
+            {/* {selectedTransaction && (
               <Button 
                 onClick={handleDelete}
                 variant="outlined" 
@@ -336,7 +300,7 @@ import {
                >
                 削除
               </Button>
-            )}
+            )} */}
           </Stack>
         </Box>
       </Box>

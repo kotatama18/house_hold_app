@@ -19,6 +19,7 @@ import {
   import { Transaction } from "../../types/index.ts";
   import { formatCurrency } from "../../utils/formatting.ts";
   import IconComponents from "../common/iconComponents.tsx";
+import { theme } from "../../theme/theme.ts";
   
   
   interface TransactionMenuProps {
@@ -65,7 +66,7 @@ import {
               <Typography variant="body1">タスク一覧</Typography>
             </Box>
             {/* 右側の追加ボタン */}
-            <Button startIcon={<AddCircleIcon />} color="primary" onClick={onAddTransactionForm}>
+            <Button startIcon={<AddCircleIcon />} sx={{ color: theme.palette.todoColor.main }} onClick={onAddTransactionForm}>
               タスクを追加
             </Button>
           </Box>

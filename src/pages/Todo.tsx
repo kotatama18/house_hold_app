@@ -7,6 +7,7 @@ import TodoTransactionForm from '../components/todo/TodoTransactionForm.tsx'
 import { Todo, Transaction } from '../types'
 import { format } from 'date-fns'
 import { Schema } from '../validations/schema.ts'
+import { TodoSchema } from '../validations/todoSchema.ts'
 
 interface HomeProps{
   monthlyTransactions: Transaction[],
@@ -14,11 +15,14 @@ interface HomeProps{
   onSaveTransaction: (transaction: Schema) => Promise<void>
   onDeleteTransaction: (transacrionId: string) => Promise<void>
   onUpdateTransaction:  (transaction: Schema, transacrionId: string) => Promise<void>
+  onSaveTodo: (transaction: TodoSchema) => Promise<void>
+  onDeleteTodo: (transacrionId: string) => Promise<void>
+  onUpdateTodo:  (transaction: TodoSchema, transacrionId: string) => Promise<void>
   monthlyTodos: Todo[]
 }
 
 // monthlyTransactions: 今月のTransactionsテーブルのデータ
-const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDeleteTransaction, onUpdateTransaction, monthlyTodos
+const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDeleteTransaction, onUpdateTransaction, onSaveTodo, onDeleteTodo, onUpdateTodo,monthlyTodos
   }: HomeProps, ) => {
   const today = format(new Date(), "yyyy-MM-dd");
   //選択した日付をステートとして管理する（初期値は今日の日付）
@@ -26,6 +30,7 @@ const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDe
   const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false)
   //選択した取引を持つステート,何も持っていない場合はnull
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null)
   //Transactionsテーブルから選択した日付のデータのみを取得する
   const dairyTransactions = monthlyTransactions.filter((transaction)=>{
     return transaction.date === currentDay;
@@ -94,11 +99,11 @@ const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDe
           onCloseForm={closeForm} 
           isEntryDrawerOpen={isEntryDrawerOpen} 
           currentDay={currentDay} 
-          onSaveTransaction={onSaveTransaction}
-          selectedTransaction={selectedTransaction}
-          onDeleteTransaction={onDeleteTransaction}
-          setSelectedTransaction={setSelectedTransaction}
-          onUpdateTransaction={onUpdateTransaction}
+          onSaveTodo={onSaveTodo}
+          selectedTodo={selectedTodo}
+          onDeleteTodo={onDeleteTodo}
+          setSelectedTodo={setSelectedTodo}
+          onUpdateTodo={onUpdateTodo}
         />
       </Box>
     </Box>

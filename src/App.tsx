@@ -13,6 +13,7 @@ import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase
 import { db } from "./firebase.ts"
 import { formatMonth } from './utils/formatting.ts';
 import { Schema } from './validations/schema.ts';
+import { TodoSchema,  todoSchema} from './validations/todoSchema.ts';
 import TodoPage from './pages/Todo.tsx';
 import { IsTodayOptions } from 'date-fns';
 
@@ -62,9 +63,76 @@ function App() {
     return transacrion.date.startsWith(formatMonth(currentMonth))
   })
 
+  //取引を保存する処理(Transaction)
+  const handleSaveTransaction = async (transaction: Schema) => {
+    try {
+      //firestoreにデータを保存する
+      // Transactionsテーブルに引数で受け取ったtransactinoを保存する
+      const docRef = await addDoc(collection(db, "Transactions"), transaction);
+      console.log("Document written with ID: ", docRef.id);
+
+      //実際に送るオブジェクトを格納
+      const newTransaction = {
+        //firestoreのレコード毎のid
+        id: docRef.id,
+        ...transaction
+      } as Transaction
+      //直前までのトランザクションに今回のトランザクションを追加する。
+      setTransactions((prevTransaction) => [...prevTransaction, newTransaction])
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("firebaseのエラーは:", err)
+        console.error("firebaseのエラーメッセージは:", err.message)
+        console.error("firebaseのエラーコードは:", err.code)
+      } else {
+        console.error("一般的なエラーは:", err)
+      }
+    }
+  }
+
+  //firestoreのデータ削除(Transaction)
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try{
+      await deleteDoc(doc(db, "Transactions", transactionId));
+      //削除対象の取引と合致するステートをもつ
+      const filterdTransactions = transactions.filter((transaction) => transaction.id !== transactionId)
+      setTransactions(filterdTransactions);
+    }catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("firebaseのエラーは:", err)
+        console.error("firebaseのエラーメッセージは:", err.message)
+        console.error("firebaseのエラーコードは:", err.code)
+      } else {
+        console.error("一般的なエラーは:", err)
+      }
+    }
+  }
+
+  //firestoreの更新処理(Transaction)
+  const handleUpdateTransaction = async (transaction: Schema, transacrionId:string) => {
+    try{
+      const docRef = doc(db, "Transactions", transacrionId);
+      // Set the "capital" field of the city 'DC'
+      await updateDoc(docRef, transaction);
+      //取引更新
+      //このスプレッド構文の記述をすることでtとtransacitonの中のオブジェクトが合体する。後者がプロパティの値を書き換える
+      const updatedTransactions = transactions.map((t)=> t.id === transacrionId ? {...t, ...transaction}: t) as Transaction[]
+      setTransactions(updatedTransactions);
+    }catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("firebaseのエラーは:", err)
+        console.error("firebaseのエラーメッセージは:", err.message)
+        console.error("firebaseのエラーコードは:", err.code)
+      } else {
+        console.error("一般的なエラーは:", err)
+      }
+    }
+  }
+
+
   // firestore(Todo)の内容を取得したい処理
   useEffect(() => {
-    //　firebaseのTransactionsテーブルにある値を全て取得するメソッド
+    //　firebaseのTodoテーブルにある値を全て取得するメソッド
     const fetchTodo = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "Todo"))
@@ -94,22 +162,22 @@ function App() {
   })
 
 
-  //取引を保存する処理
-  const handleSaveTransaction = async (transaction: Schema) => {
+  //取引を保存する処理(Todo)
+  const handleSaveTodo = async (todo: TodoSchema) => {
     try {
       //firestoreにデータを保存する
-      // Transactionsテーブルに引数で受け取ったtransactinoを保存する
-      const docRef = await addDoc(collection(db, "Transactions"), transaction);
+      // Todoテーブルに引数で受け取ったtransactinoを保存する
+      const docRef = await addDoc(collection(db, "Todo"), todo);
       console.log("Document written with ID: ", docRef.id);
 
       //実際に送るオブジェクトを格納
-      const newTransaction = {
+      const newTodo = {
         //firestoreのレコード毎のid
         id: docRef.id,
-        ...transaction
-      } as Transaction
+        ...todo
+      } as Todo
       //直前までのトランザクションに今回のトランザクションを追加する。
-      setTransactions((prevTransaction) => [...prevTransaction, newTransaction])
+      setTodos((prevTodo) => [...prevTodo, newTodo])
     } catch (err) {
       if (isFireStoreError(err)) {
         console.error("firebaseのエラーは:", err)
@@ -121,13 +189,13 @@ function App() {
     }
   }
 
-  //firestoreのデータ削除
-  const handleDeleteTransaction = async (transactionId: string) => {
+  //firestoreのデータ削除(Todo)
+  const handleDeleteTodo = async (todoId: string) => {
     try{
-      await deleteDoc(doc(db, "Transactions", transactionId));
+      await deleteDoc(doc(db, "Todo", todoId));
       //削除対象の取引と合致するステートをもつ
-      const filterdTransactions = transactions.filter((transaction) => transaction.id !== transactionId)
-      setTransactions(filterdTransactions);
+      const filterdTodo = todos.filter((todo) => todo.id !== todoId)
+      setTodos(filterdTodo);
     }catch (err) {
       if (isFireStoreError(err)) {
         console.error("firebaseのエラーは:", err)
@@ -139,16 +207,16 @@ function App() {
     }
   }
 
-  //firestoreの更新処理
-  const handleUpdateTransaction = async (transaction: Schema, transacrionId:string) => {
+  //firestoreの更新処理(Todo)
+  const handleUpdateTodo = async (todo: TodoSchema, transacrionId:string) => {
     try{
-      const docRef = doc(db, "Transactions", transacrionId);
+      const docRef = doc(db, "Todo", transacrionId);
       // Set the "capital" field of the city 'DC'
-      await updateDoc(docRef, transaction);
+      await updateDoc(docRef, todo);
       //取引更新
       //このスプレッド構文の記述をすることでtとtransacitonの中のオブジェクトが合体する。後者がプロパティの値を書き換える
-      const updatedTransactions = transactions.map((t)=> t.id === transacrionId ? {...t, ...transaction}: t) as Transaction[]
-      setTransactions(updatedTransactions);
+      const updatedTodo = todos.map((t)=> t.id === transacrionId ? {...t, ...todo}: t) as Todo[]
+      setTodos(updatedTodo);
     }catch (err) {
       if (isFireStoreError(err)) {
         console.error("firebaseのエラーは:", err)
@@ -159,7 +227,6 @@ function App() {
       }
     }
   }
-
   return (
     // アプリ全体にテーマを反映させる
     <ThemeProvider theme={theme}>
@@ -188,6 +255,9 @@ function App() {
                    onSaveTransaction={handleSaveTransaction} 
                    onDeleteTransaction={handleDeleteTransaction}
                    onUpdateTransaction={handleUpdateTransaction}
+                   onSaveTodo={handleSaveTodo} 
+                   onDeleteTodo={handleDeleteTodo}
+                   onUpdateTodo={handleUpdateTodo}
                    monthlyTodos={monthlyTodos}
                 />} 
                 />

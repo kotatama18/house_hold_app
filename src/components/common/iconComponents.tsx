@@ -8,7 +8,7 @@ import TrainIcon from "@mui/icons-material/Train";
 import WorkIcon from "@mui/icons-material/Work";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import SavingsIcon from "@mui/icons-material/Savings";
-import { ExpenseCategory, IncomeCategory } from '../../types';
+import { ExpenseCategory, IncomeCategory, TodoCategory } from '../../types';
 
 const IconComponents: Record<IncomeCategory | ExpenseCategory, JSX.Element> = {
   食費: <FastfoodIcon fontSize='small'/>,
@@ -20,7 +20,6 @@ const IconComponents: Record<IncomeCategory | ExpenseCategory, JSX.Element> = {
   給与: <WorkIcon fontSize='small'/>,
   副収入: <AddBusinessIcon fontSize='small'/>,
   お小遣い: <SavingsIcon fontSize='small'/>,
-
 }
 
-export default IconComponents
+export default IconComponents 

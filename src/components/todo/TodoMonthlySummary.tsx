@@ -77,7 +77,8 @@ const MonthlySummary = ({monthlyTransactions}: MonthlySummaryprops) => {
     //         </Card>
     //     </Grid>
     // </Grid>
-    <div>やりたい事ヘッダーがきますよ〜</div>
+    // <div>やりたい事ヘッダーがきますよ〜</div>
+    <div></div>
   )
 }
 

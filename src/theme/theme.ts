@@ -8,6 +8,10 @@ declare module "@mui/material/styles"{
         expenseColor: PaletteColor,
         balanceColor: PaletteColor,
         todoColor: PaletteColor,
+        workColor: PaletteColor,
+        privateColor: PaletteColor,
+        studyColor: PaletteColor,
+
     }
 
     // 初期設定　プロパティの設定が必須ではない。
@@ -16,6 +20,10 @@ declare module "@mui/material/styles"{
         expenseColor?: PaletteColorOptions,
         balanceColor?: PaletteColorOptions,
         todoColor?: PaletteColorOptions,
+        workColor?: PaletteColorOptions,
+        privateColor?: PaletteColorOptions,
+        studyColor?: PaletteColorOptions,
+        
 
     }
 }
@@ -49,8 +57,23 @@ export const theme = createTheme({
         },
         todoColor:{
             main: purple[300],
-            light:purple[100],
+            light:purple[200],
             dark:purple[500],
-        }
+        },
+        workColor:{
+            main: red[300],
+            light:red[100],
+            dark:red[500],
+        },
+        privateColor:{
+            main: green[300],
+            light:green[100],
+            dark:green[500],
+        },
+        studyColor:{
+            main: blue[300],
+            light:blue[100],
+            dark:blue[500],
+        },
     }
 })

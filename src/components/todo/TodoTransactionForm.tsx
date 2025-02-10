@@ -70,13 +70,20 @@ import {
       defaultValues:{
         date: currentDay,
         title: "",
-        type: "",
+        type: "タスク",
         category: "",
         status: "未完了",
         memo: "",
       },
       resolver : zodResolver(todoSchema)
     })
+
+    //formのvalueにincomeかexpenseか設定する
+  const typeToggle = (type: "予定" | "タスク")   =>{
+    //フィールドのvalunに値を設定する
+    //フィールド名typeに引数で渡されたtyp(income, expense)を設定する
+    setValue("type", type)
+  }
   
     //選択した日付がフォームの日付に設定される
     //useEffectは第二引数の配列に入れた変数が変化する度に実行する。[]の場合は初回レンダリング時のみ
@@ -120,11 +127,13 @@ import {
     useEffect(()=>{
       if(selectedTodo){
         setValue("date", selectedTodo.date)
+        setValue("type", selectedTodo.type)
+        setValue("category", selectedTodo.category)
         setValue("title", selectedTodo.title)
         setValue("memo", selectedTodo.memo)
       }else{
         reset({
-          type: "",
+          type: "タスク",
           date: currentDay,
           title: "",
           category: "",
@@ -202,29 +211,38 @@ import {
               )}
             />
             {/* タイプ */}
-            <Controller
-              name="type"
-              control={control}
-              render={({field})=>(
-                <TextField 
-                  {...field} 
-                  id="タイプ" 
-                  label="タイプ" 
-                  select
-                  error={!!errors.type}
-                    helperText={errors.type?.message}
+            <Controller 
+            name="type"
+            control={control}
+            render ={({field})=>(
+              <ButtonGroup fullWidth>
+                <Button 
+                onClick={()=>typeToggle("予定")}
+                variant={field.value === "予定" ? "contained" : "outlined"}
+                sx={{
+                  bgcolor: field.value === "予定" ? theme.palette.todoColor.light : "white",
+                  color: field.value === "予定" ? "white" : theme.palette.todoColor.light,
+                  borderColor: theme.palette.todoColor.light, // 枠線の色を指定
+                  borderWidth: "2px", // 枠線の太さ（好みに応じて調整）
+                }}
+                  >予定
+                </Button>
+                <Button 
+                  //caontained:ボタンを塗りつぶす, outlined: ボタンに輪郭線がつく
+                  variant={field.value === "タスク" ? "contained" : "outlined"}
+                  sx={{
+                    bgcolor: field.value === "タスク" ? theme.palette.todoColor.light : "white",
+                    color: field.value === "タスク" ? "white" : theme.palette.todoColor.light,
+                    borderColor: theme.palette.todoColor.light, // 枠線の色を指定
+                    borderWidth: "2px", // 枠線の太さ（好みに応じて調整）
+                  }}
+                  onClick={() =>typeToggle("タスク")}
                 >
-                  {types.map((type)=>(
-                    <MenuItem value={type.label} key={type.label}>
-                    <ListItemIcon>
-                      {type.icon}
-                    </ListItemIcon>
-                    {type.label}
-                  </MenuItem>
-                  ))}
-            </TextField>
-              )}
-            />
+                タスク
+                </Button>
+              </ButtonGroup>
+            )}
+          />
             {/* カテゴリ */}
             <Controller
               name="category"
@@ -286,12 +304,11 @@ import {
               sx={{ backgroundColor: theme.palette.todoColor.main }}
               fullWidth
             >
-              "保存"
-              {/* {selectedTransaction ? "更新" : "保存"} */}
+              {selectedTodo ? "更新" : "保存"}
             </Button>
             {/* 削除ボタン */}
             {/* selectedTransactionが存在する(true)の時のみ以下が出現する*/}
-            {/* {selectedTransaction && (
+            {selectedTodo && (
               <Button 
                 onClick={handleDelete}
                 variant="outlined" 
@@ -300,7 +317,7 @@ import {
                >
                 削除
               </Button>
-            )} */}
+            )}
           </Stack>
         </Box>
       </Box>

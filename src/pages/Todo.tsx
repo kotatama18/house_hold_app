@@ -35,6 +35,10 @@ const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDe
   const dairyTransactions = monthlyTransactions.filter((transaction)=>{
     return transaction.date === currentDay;
   });
+  //Todoテーブルから選択した日付のデータのみを取得する
+  const dairyTodos = monthlyTodos.filter((todo)=>{
+    return todo.date === currentDay;
+  });
 
   //フォーム閉じるボタンでフォームの中身を空にする
   const closeForm = () =>{
@@ -43,21 +47,21 @@ const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDe
   }
 
   //フォームの開閉処理
-  const handleAddTransactionForm = () =>{
+  const handleAddTodoForm = () =>{
     //フォームに表示される内容を空にする(取引カードをクリックした時に反映されたものを空にする)
     //フォームに値が入っている場合はそれを空にして、値が何もない場合はフォームを閉じる
-    if(selectedTransaction){
-      setSelectedTransaction(null)
+    if(selectedTodo){
+      setSelectedTodo(null)
     }else{
       setIsEntryDrawerOpen(!isEntryDrawerOpen)
     }
   }
 
-  //取引が選択された時の処理
-  const handleSelectTransaction = (transaction: Transaction) =>{
+  //取引が選択された時の処理(Todo)
+  const handleSelectTodo = (todo: Todo) =>{
     //フォームが開く(何度教えても開きっぱ)
     setIsEntryDrawerOpen(true)
-    setSelectedTransaction(transaction)
+    setSelectedTodo(todo)
   }
 
   //カレンダーの日付マスをクリックしたらその日付のフォームが開く
@@ -70,6 +74,15 @@ const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDe
     }
   }
 
+  const handleCheckChange = (task) =>{
+    console.log("etas" ,task)
+    if(task.status === "完了"){
+      task.status = "未完了"
+    }else{
+    task.status = "完了"
+    }
+    onUpdateTodo(task, task.id)
+  }
 
   return (
     <Box sx={{display:'flex'}}>
@@ -84,16 +97,19 @@ const TodoHome = ({monthlyTransactions, setCurrentMonth, onSaveTransaction, onDe
           today={today}
           onDateClickOpenForm={handleDateClickOpenForm}
           monthlyTodos={monthlyTodos}
+          onCheckChange={handleCheckChange}
         />
       </Box>
 
       {/* 右側のコンテンツ */}
       <Box>
         <TodoTransactionMenu  
-          dairyTransactions={dairyTransactions} 
+          dairyTodos={dairyTodos} 
           currentDay={currentDay} 
-          onAddTransactionForm={handleAddTransactionForm} 
-          onSelectTransaction={handleSelectTransaction}
+          onAddTodoForm={handleAddTodoForm} 
+          onSelectTodo={handleSelectTodo}
+          onUpdateTodo={onUpdateTodo}
+          onCheckChange={handleCheckChange}
         />
         <TodoTransactionForm 
           onCloseForm={closeForm} 

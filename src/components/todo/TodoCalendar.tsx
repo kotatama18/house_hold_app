@@ -19,21 +19,24 @@ interface CalendarProps{
     today: string
     onDateClickOpenForm: (dateStr: string) => void,
     monthlyTodos: Todo[]
+    onCheckChange: (task: any) => void
 }
-const Calendar = ({setCurrentMonth, setCurrentDay, currentDay, today, onDateClickOpenForm, monthlyTodos}: CalendarProps) => {
+const Calendar = ({setCurrentMonth, setCurrentDay, currentDay, today, onDateClickOpenForm, monthlyTodos, onCheckChange}: CalendarProps) => {
     const theme = useTheme()
     //日付毎にタスクをまとめるメソッド
     const dailyTodos = groupbyDailyTodos(monthlyTodos)
 
     //FullCalender用のイベントを作成する関数
     const createCalendarEvents = (dailyTodos: Record<string, Todo[]>)=> {
-        return Object.keys(dailyTodos).map((date)=>{
+        return Object.keys(dailyTodos).map((data)=>{
             return{
-                start: date,
+                start: data,
                 extendedProps: {
-                    title: dailyTodos[date].map(todo => todo.title), // ここでタスクのタイトルのみを渡す
-                    type: dailyTodos[date].map(todo => todo.type),
-                    category: dailyTodos[date].map(todo => todo.category),
+                    title: dailyTodos[data].map(todo => todo.title), // ここでタスクのタイトルのみを渡す
+                    type: dailyTodos[data].map(todo => todo.type),
+                    category: dailyTodos[data].map(todo => todo.category),
+                    status: dailyTodos[data].map(todo => todo.status),
+                    all: dailyTodos[data]
                 }
             }
         })
@@ -48,12 +51,17 @@ const Calendar = ({setCurrentMonth, setCurrentDay, currentDay, today, onDateClic
         backgroundColor: theme.palette.todoColor.light
     }
 
-    //カレンダーにその日の収支をレンダリングする処理
+    const handleClick = () =>{
+        console.log("success")
+    }
+
+    //カレンダーにその日の内容をレンダリングする処理
     const renderEventContent = (eventInfo: EventContentArg) => {
         const title = eventInfo.event.extendedProps.title || [];
         const categories = eventInfo.event.extendedProps.category || [];
         const types = eventInfo.event.extendedProps.type || []; // 各todoのtypeを取得
-    
+        const statuses = eventInfo.event.extendedProps.status || []; 
+        const dailyAllData = eventInfo.event.extendedProps.all || []; 
         return (
             <div>
                 {title.length > 0 ? (
@@ -61,14 +69,28 @@ const Calendar = ({setCurrentMonth, setCurrentDay, currentDay, today, onDateClic
                         {title.map((todo: string, index: number) => {
                             const category = categories[index]; 
                             const type = types[index];// 予定かタスクかを判断
+                            const status = statuses[index];
+                            const data = dailyAllData[index];
+                            
                             
                             // チェックボックスと立体感を加えるスタイル
                             return (
-                                <li key={index} className={`task ${type}`}>
+                                <li 
+                                    key={index} 
+                                    className={`task ${type}`}
+                                    onClick={() => handleClick()}
+                                >
                                     {type === "タスク" ? (
                                         <>
                                             <span className={`task ${category}`}>
-                                            <input type="checkbox" className="task-checkbox" />
+                                            <label>
+                                            <input 
+                                                type="checkbox" 
+                                                className="task-checkbox" 
+                                                checked={status==="完了"}
+                                                // onChange={()=>onCheckChange(data)}
+                                            />
+                                            </label>
                                                 {todo}
                                             </span>
                                         </>
@@ -115,6 +137,10 @@ const Calendar = ({setCurrentMonth, setCurrentDay, currentDay, today, onDateClic
         eventContent={renderEventContent}
         datesSet={handleDateSet}
         dateClick={handleDateClick}
+        // eventClick={(info) => {
+        //     console.log("Event clicked:", info.event);
+        //     alert(`イベント「${info.event.title}」がクリックされました！`);
+        // }}
     />
   )
 }

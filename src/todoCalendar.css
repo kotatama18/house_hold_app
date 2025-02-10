@@ -53,15 +53,15 @@ ul {
 
 /* カテゴリーごとの背景色設定*/
 .task.会社 {
-  color: #f06292;/* RED */
+  color: #e57373;/* RED */
 }
 
 .task.プライベート {
-  color: #26a69a;/* Green */
+  color: #81c784;/* Green */
 }
 
 .task.勉強 {
-  color:  #29b6f6; /* Blue */
+  color:  #64b5f6; /* Blue */
 }
 
 /* 予定のテキストに立体感を持たせる */
@@ -80,13 +80,13 @@ ul {
 
 /* カテゴリーごとの背景色設定 */
 .scheduled.会社 {
-  background-color: #f06292;/* RED */
+  background-color: #e57373/* RED */
 }
 
 .scheduled.プライベート {
-  background-color: #26a69a;/* Green */
+  background-color: #81c784;/* Green */
 }
 
 .scheduled.勉強 {
-  background-color:  #29b6f6; /* Blue */
+  background-color:  #64b5f6; /* Blue */
 }
